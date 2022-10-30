@@ -34,6 +34,7 @@ class MemberJpaRepositoryTest {
 
     @Test
     public void basicCRUD() {
+        //생성
         Member member1 = new Member("member1");
         Member member2 = new Member("member2");
         memberJpaRepository.save(member1);
@@ -62,6 +63,24 @@ class MemberJpaRepositoryTest {
         assertThat(deleteCount).isEqualTo(0);
     }
 
+
+    @Test
+    void greatThan(){
+        Member member1 = new Member("kim", 19);
+        Member member2 = new Member("kim", 20);
+        Member member3 = new Member("kim", 21);
+        Member member4 = new Member("kim", 22);
+        Member member5 = new Member("kim", 17);
+
+        memberJpaRepository.save(member1);
+        memberJpaRepository.save(member2);
+        memberJpaRepository.save(member3);
+        memberJpaRepository.save(member4);
+        memberJpaRepository.save(member5);
+        List<Member> overNineteen = memberJpaRepository.findByUsernameAndAgeGreaterThen("kim", 19);
+
+        assertThat(overNineteen.size()).isEqualTo(3);
+    }
 
 
 }
