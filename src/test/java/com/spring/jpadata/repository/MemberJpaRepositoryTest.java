@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@Rollback(false)
+@Rollback(false) // test에서 디비를 확인하고싶다면 RollBack(false)를 해주어야 한다.
 class MemberJpaRepositoryTest {
 
     @Autowired
@@ -26,6 +26,8 @@ class MemberJpaRepositoryTest {
         Member ids = memberJpaRepository.find(save.getId());
 
         assertThat(save.getId()).isEqualTo(ids.getId());
+        assertThat(save.getUsername()).isEqualTo(ids.getUsername());
+        assertThat(save).isEqualTo(ids);
     }
 
 
