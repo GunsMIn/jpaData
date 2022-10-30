@@ -1,4 +1,4 @@
-package com.spring.jpadata.repository;
+package com.spring.jpadata.repository.jpadata;
 
 import com.spring.jpadata.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
