@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -135,6 +136,31 @@ class MemberRepositoryTest {
             System.out.println("memberDto = " + memberDto);
         }
     }
+
+
+    @Test
+    @DisplayName("@Query,컬렉션을 파라미터로 넘기기 테스트")
+    void collectionParameter() {
+        Member member1 = new Member("kim", 19);
+        Member member2 = new Member("lee", 20);
+        Member member3 = new Member("park", 21);
+        Member member4 = new Member("kim", 22);
+        Member member5 = new Member("kim", 17);
+
+        memberJpaRepository.save(member1);
+        memberJpaRepository.save(member2);
+        memberJpaRepository.save(member3);
+        memberJpaRepository.save(member4);
+        memberJpaRepository.save(member5);
+
+
+
+        List<Member> byNames = memberJpaRepository.findByNames(Arrays.asList("kim", "park"));
+        assertThat(4).isEqualTo(byNames.size());
+        assertThat(19).isEqualTo(byNames.get(0).getAge());
+    }
+
+
 
 
 }
