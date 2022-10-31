@@ -1,7 +1,8 @@
-package com.spring.jpadata.repository;
+package com.spring.jpadata.repository.pure;
 
 import com.spring.jpadata.entity.Member;
 import com.spring.jpadata.repository.pure.MemberJpaRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -82,5 +83,30 @@ class MemberJpaRepositoryTest {
         assertThat(overNineteen.size()).isEqualTo(3);
     }
 
+
+    @Test
+    @DisplayName("jpa 페이징처리 테스트")
+    public void paging() {
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 10));
+        memberJpaRepository.save(new Member("member3", 10));
+        memberJpaRepository.save(new Member("member4", 10));
+        memberJpaRepository.save(new Member("member5", 10));
+
+        int age = 10;
+        int offset = 0;
+        int limit = 3;
+
+        List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
+        Long count = memberJpaRepository.totalCount(age);
+
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(count).isEqualTo(5);
+
+        for (Member member : members) {
+            System.out.println(member);
+        }
+
+    }
 
 }
