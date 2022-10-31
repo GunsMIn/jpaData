@@ -1,5 +1,10 @@
 # ✨Spring_STUDY
 ✔jpaData를 이용한 프로젝트  레파지토리입니다.✔
+![image](https://user-images.githubusercontent.com/104709432/198950229-e233789c-39a7-4005-b934-d6e7a21f1b0f.png)
+<br>
+<img src="https://img.shields.io/badge/Java-E34F26?style=flat&logo=Java&logoColor=white"/></a>
+<img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat&logo=Spring Boot&logoColor=white"/></a>
+<img src="https://img.shields.io/badge/JUnit5-25A162?style=flat&logo=JUnit5&logoColor=white"/></a>
 <hr>
 <b>📝파일명 : 프로젝트 진행 내용</b><br>
 - MemberRepository 안터페이스: JpaRepository<>를 상속받은 interface가 jpaData repository이다  <br>
