@@ -1,11 +1,7 @@
 package com.spring.jpadata.repository;
 
-import com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer;
-import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 import com.spring.jpadata.entity.Member;
-import com.sun.xml.bind.v2.schemagen.xmlschema.AttrDecls;
-import com.sun.xml.bind.v2.schemagen.xmlschema.AttributeType;
-import org.junit.jupiter.api.Assertions;
+import com.spring.jpadata.repository.jpadata.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest

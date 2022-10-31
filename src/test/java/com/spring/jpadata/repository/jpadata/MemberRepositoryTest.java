@@ -1,6 +1,9 @@
 package com.spring.jpadata.repository.jpadata;
 
+import com.spring.jpadata.dto.MemberDto;
 import com.spring.jpadata.entity.Member;
+import com.spring.jpadata.entity.Team;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +23,8 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberJpaRepository;
+    @Autowired
+    TeamRepository teamRepository;
 
 
     @Test
@@ -71,5 +76,65 @@ class MemberRepositoryTest {
 
         assertThat(overNineteen.size()).isEqualTo(3);
     }
+
+
+    @Test
+    @DisplayName("@Query, 리포지토리 메소드에 쿼리 정의하기")
+    void findNameAndAgeTest() {
+        Member member1 = new Member("kim", 19);
+        Member member2 = new Member("kim", 20);
+        Member member3 = new Member("kim", 21);
+        Member member4 = new Member("kim", 22);
+        Member member5 = new Member("kim", 17);
+
+        memberJpaRepository.save(member1);
+        memberJpaRepository.save(member2);
+        memberJpaRepository.save(member3);
+        memberJpaRepository.save(member4);
+        memberJpaRepository.save(member5);
+
+        List<Member> kimand22 = memberJpaRepository.findUser("kim", 22);
+        assertThat(kimand22.get(0).getUsername()).isEqualTo("kim");
+        assertThat(kimand22.get(0).getAge()).isEqualTo(22);
+        assertThat(kimand22.get(0)).isEqualTo(member4);
+
+    }
+
+    @Test
+    @DisplayName("dto로 조회")
+    void dto() {
+        Team team1 = new Team("team1");
+        Team team2 = new Team("team2");
+        Team team3 = new Team("team3");
+
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+        teamRepository.save(team3);
+
+        Member member1 = new Member("lee", 19,team1);
+        Member member2 = new Member("kim", 20,team2);
+        Member member3 = new Member("kim", 21,team3);
+        Member member4 = new Member("kim", 22,team1);
+        Member member5 = new Member("kim", 17,team2);
+
+        memberJpaRepository.save(member1);
+        memberJpaRepository.save(member2);
+        memberJpaRepository.save(member3);
+        memberJpaRepository.save(member4);
+        memberJpaRepository.save(member5);
+
+        List<MemberDto> memberDtos = memberJpaRepository.findMemberDto();
+
+        assertThat(memberDtos.size()).isEqualTo(5);
+        assertThat(memberDtos.get(2).getTeamname()).isEqualTo("team3");
+        assertThat(memberDtos.get(1).getTeamname()).isEqualTo("team2");
+        assertThat(memberDtos.get(0).getUsername()).isEqualTo("lee");
+
+
+        for (MemberDto memberDto : memberDtos) {
+            System.out.println("memberDto = " + memberDto);
+        }
+    }
+
 
 }
