@@ -9,13 +9,20 @@
 <b>📝파일명 : 프로젝트 진행 내용</b><br>
 - MemberRepository 안터페이스: JpaRepository<>를 상속받은 interface가 jpaData repository이다  <br>
 - JpaRepository 인터페이스: 공통 CRUD 제공  제네릭은 <엔티티 타입, 식별자 타입> 설정 <br>
-- save(S) : 새로운 엔티티는 저장하고 이미 있는 엔티티는 병합한다. <br>
-  delete(T) : 엔티티 하나를 삭제한다. 내부에서 EntityManager.remove() 호출 <br>
-  findById(ID) : 엔티티 하나를 조회한다. 내부에서 EntityManager.find() 호출 <br>
-  getOne(ID) : 엔티티를 프록시로 조회한다. 내부에서 EntityManager.getReference() 호출 <br>
-  findAll(…) : 모든 엔티티를 조회한다. 정렬( Sort )이나 페이징( Pageable ) 조건을 파라미터로 제공할 수
+<BR><BR><BR>
+
+## 스프링 데이터 JPA 기본메소드<BR>
+  <summary>save(S)</summary> : 새로운 엔티티는 저장하고 이미 있는 엔티티는 병합한다. <br>
+  <summary>delete(T)</summary> : 엔티티 하나를 삭제한다. 내부에서 EntityManager.remove() 호출 <br>
+  <summary>findById(ID)</summary> : 엔티티 하나를 조회한다. 내부에서 EntityManager.find() 호출 <br>
+  <summary>getOne(ID)</summary> : 엔티티를 프록시로 조회한다. 내부에서 EntityManager.getReference() 호출 <br>
+  <summary>findAll(…)</summary> : 모든 엔티티를 조회한다. 정렬( Sort )이나 페이징( Pageable ) 조건을 파라미터로 제공할 수
 있다 <br>
 - save(S) : 새로운 엔티티는 저장하고 이미 있는 엔티티는 병합한다. <br>
+
+<BR><BR><BR>
+## @Query로 DTO조회하기
+![image](https://user-images.githubusercontent.com/104709432/198951170-dc62477d-2dc3-435c-983f-a2c79655c89b.png)
 <hr>
 <b>🎈학습 내용</b><br>
 <b>-tdd시 주의점</b> :  언제 실행해도 동일한 결과가 나오게끔 구성해야함. 또한 결과값이 없을때는 해당 exception을 확인하는 Assertions.assertTrows메소드를 사용해야한다
