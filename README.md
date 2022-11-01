@@ -49,7 +49,7 @@ em.clear를 대신해주는것은  @Modifying(clearAutomatically = true)이다.
 이 어노테이션을 사용하여 member를 조회할 때 team을 한번에 같이 조회하게된다.<br> jpql의 문법이 복잡해지면 @EntiityGraph라는 어노테이션을 사용하면 더 편리한데 다음과 같다.
 스프링 데이터 JPA는 JPA가 제공하는 엔티티 그래프 기능을 편리하게 사용하게 도와준다. 이 기능을
 사용하면 JPQL 없이 페치 조인을 사용할 수 있다.
-![image](https://user-images.githubusercontent.com/104709432/199194821-3139e88a-d495-4312-9b81-f9e51f03cdac.png)
+<img width="1350" alt="캡처" src="https://user-images.githubusercontent.com/104709432/199195665-4bd7e872-8cfa-45c7-8ed6-044265af0414.PNG">
 
   
 <hr>
