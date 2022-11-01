@@ -35,6 +35,7 @@
 
 <BR><BR><BR>
 ## 벌크연산 쿼리 메소드
+![image](https://user-images.githubusercontent.com/104709432/199170208-3ddb81b8-1c9c-4225-bb6e-15285c9216f2.png)
 <summary>@Modifying: </summary>em.excuteUpdate()를 실행해주는 어노테이션 
 <summary>벌크 연산의 주의점: </summary>벌크 연산은 영속성 컨텍스트를 무시하고 실행하기 때문에, 영속성 컨텍스트에 있는 엔티티의 상태와
 DB에 엔티티 상태가 달라질 수 있다. 따라서 벌크연산을 한 것에서 조회를 하고싶다면 반드시 em.clear를해주어야한다. 
