@@ -32,6 +32,14 @@
 <summary>삭제</summary>: delete…By, remove…By 반환타입 long
 <summary>DISTINCT</summary>: findDistinct, findMemberDistinctBy
 <summary>LIMIT</summary>: findFirst3, findFirst, findTop, findTop3
+
+<BR><BR><BR>
+## 벌크연산 쿼리 메소드
+<summary>@Modifying: </summary>em.excuteUpdate()를 실행해주는 어노테이션 
+<summary>벌크 연산의 주의점: </summary>벌크 연산은 영속성 컨텍스트를 무시하고 실행하기 때문에, 영속성 컨텍스트에 있는 엔티티의 상태와
+DB에 엔티티 상태가 달라질 수 있다. 따라서 벌크연산을 한 것에서 조회를 하고싶다면 반드시 em.clear를해주어야한다. 
+em.clear를 대신해주는것은  @Modifying(clearAutomatically = true)이다.
+
 <hr>
 <b>🎈학습 내용</b><br>
 <b>-tdd시 주의점</b> :  언제 실행해도 동일한 결과가 나오게끔 구성해야함. 또한 결과값이 없을때는 해당 exception을 확인하는 Assertions.assertTrows메소드를 사용해야한다
