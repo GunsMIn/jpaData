@@ -47,7 +47,11 @@ em.clear를 대신해주는것은  @Modifying(clearAutomatically = true)이다.
 왜냐하면  쿼리 n+1 문제가 발생하기 때문이다. 이것을 해결하기위해서는 첫번째로 jpql로 다음과같이 해결할수있다<br>
 @Query("select m from Member m left join fetch m.team")<br>
 이 어노테이션을 사용하여 member를 조회할 때 team을 한번에 같이 조회하게된다.<br> jpql의 문법이 복잡해지면 @EntiityGraph라는 어노테이션을 사용하면 더 편리한데 다음과 같다.
-![image](https://user-images.githubusercontent.com/104709432/199193564-dc1e8f66-6e20-4c36-8833-181a346ff7ca.png)
+스프링 데이터 JPA는 JPA가 제공하는 엔티티 그래프 기능을 편리하게 사용하게 도와준다. 이 기능을
+사용하면 JPQL 없이 페치 조인을 사용할 수 있다.
+![image](https://user-images.githubusercontent.com/104709432/199194821-3139e88a-d495-4312-9b81-f9e51f03cdac.png)
+
+  
 <hr>
 <b>🎈학습 내용</b><br>
 <b>-tdd시 주의점</b> :  언제 실행해도 동일한 결과가 나오게끔 구성해야함. 또한 결과값이 없을때는 해당 exception을 확인하는 Assertions.assertTrows메소드를 사용해야한다
