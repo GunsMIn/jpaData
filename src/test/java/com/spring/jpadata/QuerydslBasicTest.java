@@ -2,9 +2,11 @@ package com.spring.jpadata;
 
 
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
+
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spring.jpadata.entity.Member;
+
 import com.spring.jpadata.entity.QMember;
 import com.spring.jpadata.entity.QTeam;
 import com.spring.jpadata.entity.Team;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+
 import java.util.List;
+
 
 import static com.spring.jpadata.entity.QMember.*;
 import static com.spring.jpadata.entity.QTeam.*;
@@ -176,6 +180,96 @@ public class QuerydslBasicTest {
 
     }
 
-    //
+    @Test
+    @DisplayName("join test")
+    void join() throws Exception {
+
+        List<Member> result = jpaQueryFactory.selectFrom(member)
+                .join(member.team, team)
+                .where(team.name.eq("teamA"))
+                .fetch();
+
+        assertThat(result)
+                .extracting("username")
+                .containsExactly("member1", "member2");
+
+    }
+
+    /**회원의 이름이 팀이름과 같은 사람 */
+    @Test
+    @DisplayName("theta 조인")
+    public void theta_join() throws Exception {
+        em.persist(new Member("teamA"));
+        em.persist(new Member("teamB"));
+
+        List<Member> result = jpaQueryFactory
+                .select(member)
+                .from(member, team)
+                .where(member.username.eq(team.name))
+                .fetch();
+
+        assertThat(result)
+                .extracting("username")
+                .containsExactly("teamA", "teamB");
+    }
+
+    /**
+     * 예) 회원과 팀을 조인하면서, 팀 이름이 teamA인 팀만 조인, 회원은 모두 조회
+     * JPQL: SELECT m, t FROM Member m LEFT JOIN m.team t on t.name = 'teamA'
+     * SQL: SELECT m.*, t.* FROM Member m LEFT JOIN Team t ON m.TEAM_ID=t.id and
+     t.name='teamA'
+     */
+    @Test
+    @DisplayName("on절 조인인")
+   void join_on_filtering() throws Exception {
+
+        List<Tuple> result = jpaQueryFactory.select(member, team)
+                .from(member)
+                .leftJoin(member.team, team)
+                .on(team.name.eq("teamA"))
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+
+    }
+
+    @Test
+    @DisplayName("내부조인과 외부조인의 차이")
+    void innerJoin_and_outerJoin() throws Exception {
+
+        List<Tuple> result = jpaQueryFactory.select(member, team)
+                .from(member)
+                .join(member.team, team)
+                .on(team.name.eq("teamA"))
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+
+    }
+
+    @Test
+    @DisplayName("연관관계가 없는 엔티티의 외부조인")
+    void join_on_no_relation() throws Exception {
+        em.persist(new Member("teamA"));
+        em.persist(new Member("teamB"));
+        List<Tuple> result = jpaQueryFactory
+                .select(member, team)
+                .from(member)
+                .leftJoin(team) // 여기가 큰 차이 원래는 member.team
+                //이었지만 team만 넣기 때문에 막 join이다 id로 조인 x 조건으로만
+                .on(member.username.eq(team.name))
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("t=" + tuple);
+        }
+
+
+    }
+
 
 }
