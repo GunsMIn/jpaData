@@ -4,6 +4,7 @@ package com.spring.jpadata;
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spring.jpadata.entity.Member;
 
@@ -267,9 +268,95 @@ public class QuerydslBasicTest {
         for (Tuple tuple : result) {
             System.out.println("t=" + tuple);
         }
+    }
+
+    @Test
+    @DisplayName("일반 조인 not fetchjoin")
+    void join2() throws Exception {
+
+        em.flush();
+        em.clear();
+
+        Member findMember = jpaQueryFactory
+                .selectFrom(member)
+                .join(member.team,team)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+    }
+
+    @Test
+    @DisplayName("fetch join 적용시")
+    void fetch() throws Exception {
+
+        em.flush();
+        em.clear();
+
+        Member findMember = jpaQueryFactory
+                .selectFrom(member)
+                .join(member.team,team).fetchJoin()
+                .where(member.username.eq("member1"))
+                .fetchOne();
 
 
     }
 
 
+    /**나이가 가장 많은 회원 조회*/
+    @Test
+    @DisplayName("서브 쿼리")
+    void subQuery() throws Exception {
+        QMember memberSub = new QMember("memberSub");
+
+        List<Member> result = jpaQueryFactory.selectFrom(member)
+                .where(member.age.eq(
+                        JPAExpressions
+                                .select(memberSub.age.max())
+                                .from(memberSub)
+                )).fetch();
+
+        assertThat(result).extracting("age").containsExactly(40);
+    }
+
+    @Test
+    @DisplayName("나이가 평균 이상인 회원 조회")
+    void subQuery2() throws Exception {
+        QMember memberSub = new QMember("memberSub");
+        // 주의 !!!!!!!!!!!! 서브쿼리안에 기존의 member사용하지 않기
+        List<Member> result = jpaQueryFactory
+                .selectFrom(member)
+                .where(member.age.goe(
+                        JPAExpressions
+                                .select(memberSub.age.avg())
+                                .from(memberSub)
+                ))
+                .fetch();
+        //25
+        assertThat(result).extracting("age")
+                .containsExactly(30, 40);
+
+
+    }
+
+    /***10살 제외 in절 사용*/
+    @Test
+    @DisplayName("서브쿼리 in절 사용 ")
+    void inSub() throws Exception {
+
+        QMember memberSub = new QMember("memberSub");
+
+        List<Member> result = jpaQueryFactory
+                .selectFrom(member)
+                .where(member.age.in(
+                        JPAExpressions
+                                .select(memberSub.age)
+                                .from(memberSub)
+                                .where(memberSub.age.gt(10))
+                ))
+                .fetch();
+
+        assertThat(result).extracting("age")
+                .containsExactly(20, 30, 40);
+
+    }
 }
