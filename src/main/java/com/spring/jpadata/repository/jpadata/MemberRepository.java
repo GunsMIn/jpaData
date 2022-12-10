@@ -3,6 +3,7 @@ package com.spring.jpadata.repository.jpadata;
 import com.spring.jpadata.dto.MemberDto;
 import com.spring.jpadata.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -36,6 +37,12 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     @Query("select m from Member m where m.username in :names") // -> 이렇게 하면 컬렉션을 파라미터 바인딩 가능!
     List<Member> findByNames(@Param("names") Collection<String> names);
 
+
+    @Modifying(clearAutomatically = true) //@Modifying 이것이 jpa에서 .excuteUpdate() 를 해준다.
+    @Query("update Member m set m.age = m.age+1 where m.age >=:age")
+    int bulkAgePlus(@Param("age") int age);
+
+    //clearAutomatically = true 속성은 벌크성 쿼리가 실행한다음에  em.clear()를 해준다.(영속성 컨텍스트 clear)
 
     //유연한 반환 타입
     List<Member> findListByUsername(String username); // 컬렉션 반환
