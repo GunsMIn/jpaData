@@ -109,4 +109,17 @@ class MemberJpaRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("벌크성 쿼리")
+    public void bulk() {
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 20));
+        memberJpaRepository.save(new Member("member3", 21));
+        memberJpaRepository.save(new Member("member4", 25));
+        memberJpaRepository.save(new Member("member5", 19));
+
+
+
+
+    }
 }

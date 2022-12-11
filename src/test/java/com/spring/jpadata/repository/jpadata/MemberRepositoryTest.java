@@ -1,3 +1,4 @@
+/*
 package com.spring.jpadata.repository.jpadata;
 
 import com.spring.jpadata.dto.MemberDto;
@@ -7,9 +8,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +33,8 @@ class MemberRepositoryTest {
     MemberRepository memberJpaRepository;
     @Autowired
     TeamRepository teamRepository;
-
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void basicCRUD() {
@@ -160,7 +168,114 @@ class MemberRepositoryTest {
         assertThat(19).isEqualTo(byNames.get(0).getAge());
     }
 
+   */
+/* @Test
+    @DisplayName("jpa 페이징처리 테스트")
+    public void paging() {
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 10));
+        memberJpaRepository.save(new Member("member3", 10));
+        memberJpaRepository.save(new Member("member4", 10));
+        memberJpaRepository.save(new Member("member5", 10));
+        int age = 10;
+
+        //spring data jpa 페이징처리는 index0이 1페이지이다
+        PageRequest pageRequest =
+                PageRequest.of(0,3,Sort.by(Sort.Direction.DESC,"username"));//0페이지에서 3개가져와
+
+        Page<Member> page = memberJpaRepository.findByAge(age, pageRequest);
+        //-->눈에 보이지는 않지만 totalCount 쿼리까지 날려준다
+        //엔티티는 api에서 노출되면 안되기때문에! 페이지를 유지하면서 dto로 반환
+        Page<MemberDto> toMap = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
+
+        //페이지에서 실제로 꺼내오고 싶을때
+        List<Member> content = page.getContent();
+        //totalcount
+        long totalCount = page.getTotalElements();
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getTotalElements()).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0);//페이지 번호 가져옴
+        assertThat(page.getTotalPages()).isEqualTo(2); // member는 5명인데 3명씩나누니까 총페이지는 2개
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+    }*//*
 
 
 
-}
+    @Test
+    @DisplayName("jpa 페이징처리 테스트")
+    public void pagingSlice() {
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 10));
+        memberJpaRepository.save(new Member("member3", 10));
+        memberJpaRepository.save(new Member("member4", 10));
+        memberJpaRepository.save(new Member("member5", 10));
+        int age = 10;
+
+        //spring data jpa 페이징처리는 index0이 1페이지이다
+        PageRequest pageRequest =
+                PageRequest.of(0,3,Sort.by(Sort.Direction.DESC,"username"));//0페이지에서 3개가져와
+
+        Slice<Member> page = memberJpaRepository.findByAge(age, pageRequest);
+        //Slice (count X) 추가로 limit + 1을 조회한다.
+        // 그래서 다음 페이지 여부 확인(최근 모바일 리스트생각해보면 됨)
+
+        //페이지에서 실제로 꺼내오고 싶을때
+        List<Member> content = page.getContent();
+
+        assertThat(content.size()).isEqualTo(3);
+        assertThat(page.getNumber()).isEqualTo(0);//페이지 번호 가져옴
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+    }
+
+    @Test
+    @DisplayName("벌크성 쿼리")
+    public void bulk() {
+        memberJpaRepository.save(new Member("member1", 10));
+        memberJpaRepository.save(new Member("member2", 20));
+        memberJpaRepository.save(new Member("member3", 21));
+        memberJpaRepository.save(new Member("member4", 25));
+        memberJpaRepository.save(new Member("member5", 40));
+
+        int result = memberJpaRepository.bulkAgePlus(20);
+       */
+/* em.flush(); // 남아있는게 디비에 반영이되는거고
+        em.clear();// 영속성 컨텍스트의 데이터를 완전히 날려버린다.*//*
+
+
+        assertThat(result).isEqualTo(4);
+
+        Optional<Member> memberJpaRepositoryById = memberJpaRepository.findById(5L);
+        Member member = memberJpaRepositoryById.get();
+        assertThat(member.getAge()).isEqualTo(41);
+    }
+
+
+    @Test
+    @DisplayName("Lazy fetch N+1해결방법")
+    public void findMemberLazy() {
+        //member1 -> teamA
+        //member2 -> teamB
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberJpaRepository.save(new Member("member1", 10, teamA));
+        memberJpaRepository.save(new Member("member2", 20, teamB));
+
+        em.flush();
+        em.clear(); // 영속성 컨텍스트를 깔끔하게 지우기위함
+
+        //한번에 다끌고온다.
+        List<Member> members = memberJpaRepository.findJpqlGraph();
+
+        for (Member member : members) {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+
+
+    }
+}*/
