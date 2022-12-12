@@ -359,4 +359,35 @@ public class QuerydslBasicTest {
                 .containsExactly(20, 30, 40);
 
     }
+
+    @Test
+    @DisplayName("case문 ")
+    void caseExcercise() throws Exception {
+        List<String> result = jpaQueryFactory
+                .select(member.age
+                .when(10).then("10살")
+                .when(20).then("20살")
+                .otherwise("기타"))
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @Test
+    @DisplayName("문자 더하기 concat")
+    void concat() throws Exception {
+        List<String> list = jpaQueryFactory
+                .select(member.username.concat("_").concat(member.age.stringValue()).concat("살"))
+                .from(member)
+                .fetch();
+
+        for (String s : list) {
+            System.out.println("member = " + s);
+        }
+
+
+    }
 }
