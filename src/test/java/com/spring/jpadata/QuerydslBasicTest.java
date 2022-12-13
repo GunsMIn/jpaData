@@ -3,9 +3,14 @@ package com.spring.jpadata;
 
 import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.spring.jpadata.dto.MemberDto;
+import com.spring.jpadata.dto.MemberResponse;
+import com.spring.jpadata.dto.QMemberResponse;
 import com.spring.jpadata.entity.Member;
 
 import com.spring.jpadata.entity.QMember;
@@ -387,7 +392,131 @@ public class QuerydslBasicTest {
         for (String s : list) {
             System.out.println("member = " + s);
         }
+    }
+    
+    @Test
+    @DisplayName("튜플")
+    void getTuple () throws Exception {
+
+        List<Tuple> result = jpaQueryFactory
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            String userName = tuple.get(member.username);
+            Integer userAge = tuple.get(member.age);
+            System.out.println("userName = " + userName);
+            System.out.println("userAge = " + userAge);
+        }
+    }
+
+    @Test
+    @DisplayName("jpql dto")
+    void findtoByJpql () throws Exception {
+
+        List<MemberResponse> memberResponseList =
+                em.createQuery("select new com.spring.jpadata.dto.MemberResponse(m.username,m.age)" +
+                " from Member m", MemberResponse.class).getResultList();
+
+        for (MemberResponse memberResponse : memberResponseList) {
+            System.out.println("memberResponse = " + memberResponse);
+        }
+    }
+
+    @Test
+    @DisplayName("쿼리디에스엘 dto setter접근")
+    void dto() throws Exception {
+        //dto로 조회
+        List<MemberResponse> result = jpaQueryFactory.select(
+                Projections.bean(MemberResponse.class,
+                        member.username,
+                        member.age)
+        ).from(member)
+                .fetch();
+
+        for (MemberResponse memberResponse : result) {
+            System.out.println("memberResponse = " + memberResponse);
+        }
+
+    }
+
+    @Test
+    @DisplayName("쿼리디에스엘 dto 필드접근")
+    void dtoByField() throws Exception {
+        //dto로 조회
+        List<MemberResponse> result = jpaQueryFactory.select(
+                Projections.fields(MemberResponse.class,
+                        member.username,
+                        member.age)
+        ).from(member)
+                .fetch();
+
+        for (MemberResponse memberResponse : result) {
+            System.out.println("memberResponse = " + memberResponse);
+        }
+
+    }
 
 
+    @Test
+    @DisplayName("쿼리디에스엘 dto생성자접근")
+    void dtoByConstructer() throws Exception {
+        //dto로 조회
+        List<MemberResponse> result = jpaQueryFactory.select(
+                Projections.constructor(MemberResponse.class,
+                        member.username,
+                        member.age)
+        ).from(member)
+                .fetch();
+
+        for (MemberResponse memberResponse : result) {
+            System.out.println("memberResponse = " + memberResponse);
+        }
+    }
+
+    @Test
+    @DisplayName("@QueryProjection")
+    void dtoByAnnotaion() throws Exception {
+
+        //컴파일시 에러를 잡아줄 수 있다.
+        List<MemberResponse> memberResponseList = jpaQueryFactory
+                .select(new QMemberResponse(member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberResponse memberResponse : memberResponseList) {
+            System.out.println("memberResponse = " + memberResponse);
+        }
+    }
+
+    @Test
+    @DisplayName("@BooleanBulider 사용 동적쿼리")
+    void dynamicQuery_BooleanBulider() throws Exception {
+        //검색 조건
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        List<Member> members = searchMember1(usernameParam, ageParam);
+
+        assertThat(members.size()).isEqualTo(1);
+
+
+    }
+
+    private List<Member> searchMember1(String usernameCond,Integer ageCond) {
+        BooleanBuilder builder = new BooleanBuilder();
+        //usernameCond 에 값이 있으면 BooleanBuilder에 and 조건을 넣어 준 것이다.
+        if (usernameCond != null) {
+            builder.and(member.username.eq(usernameCond));
+        }
+        if (ageCond != null) {
+            builder.and(member.age.eq(ageCond));
+        }
+
+        return jpaQueryFactory
+                .selectFrom(member)
+                .where(builder)
+                .fetch();
     }
 }
