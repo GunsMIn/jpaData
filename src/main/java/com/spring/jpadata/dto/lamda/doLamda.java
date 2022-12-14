@@ -1,11 +1,12 @@
 package com.spring.jpadata.dto.lamda;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.security.cert.CollectionCertStoreParameters;
+import java.util.*;
 
-import static java.util.stream.Collectors.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 
 public class doLamda {
 
@@ -35,22 +36,32 @@ public class doLamda {
         System.out.println(threeHighCalDish);*/
     }
 
-
     public static void main(String[] args) {
 
-
-            List<Dish> menu = Arrays.asList(
-                    new Dish("pork", false, 800, Dish.Type.MEAT),
-                    new Dish("beef", false, 700, Dish.Type.MEAT),
-                    new Dish("chicken", false, 400, Dish.Type.MEAT),
-                    new Dish("french", true, 530, Dish.Type.OTHER),
-                    new Dish("pizza", true, 550, Dish.Type.OTHER),
-                    new Dish("salmon", false, 450, Dish.Type.FISH)
+            List<Student> totalList = Arrays.asList(
+                    new Student("홍길동", 10, Student.Sex.MALE),
+                    new Student("홍길순", 12, Student.Sex.FEMALE),
+                    new Student("김남", 10, Student.Sex.MALE),
+                    new Student("김여", 8, Student.Sex.FEMALE),
+                    new Student("김여", 8, Student.Sex.FEMALE)
             );
 
-        long count = menu.stream().count();
-        System.out.println("count = " + count);
+        List<Student> maleList = totalList.stream()
+                    .filter(s -> s.getSex() == Student.Sex.MALE)
+                    .collect(Collectors.toList());
 
+        maleList.forEach(s-> System.out.println(s.getName()));
 
+        System.out.println("---------------위(남자)/아래(여자)---------------");
+
+        Set<Student> femaleSet = totalList.stream()
+                    .filter(s -> s.getSex() == Student.Sex.FEMALE)
+                    .collect(Collectors.toSet());
+            femaleSet.forEach(s -> System.out.println(s.getName()));
+        }
     }
-}
+
+
+
+
+
