@@ -1,6 +1,9 @@
 package com.spring.jpadata.repository.pure;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spring.jpadata.entity.Member;
+import com.spring.jpadata.entity.QMember;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -9,11 +12,16 @@ import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
+import static com.spring.jpadata.entity.QMember.*;
+
 //순수 jpa 레퍼지토리
 @Repository
+@RequiredArgsConstructor
 public class MemberJpaRepository {
     @PersistenceContext
     private EntityManager em;
+
+    private final JPAQueryFactory queryFactory;
 
     //insert
     public Member save(Member member) {
@@ -38,6 +46,29 @@ public class MemberJpaRepository {
         return em.createQuery("select m from Member m", Member.class)
                 .getResultList();
     }
+    /**QueryDsl**/
+    //쿼리디에스일 select all
+    public List<Member> findAllByDSl() {
+        return queryFactory.selectFrom(member).fetch();
+    }
+
+    //userName으로 찾기
+    public List<Member> findByUsername(String username) {
+        List<Member> resultList = em.createQuery("select m from Member m where m.username =:username", Member.class)
+                .setParameter("username", username)
+                .getResultList();
+        return resultList;
+    }
+
+    /**QueryDsl**/
+    //쿼리디에스일 findByUsename
+    public List<Member> findDslByUsername(String username) {
+        return queryFactory
+                .selectFrom(member)
+                .where(member.username.eq(username))
+                .fetch();
+    }
+
 
     //count
     public Long getCount() {
