@@ -1,6 +1,9 @@
+
 package com.spring.jpadata.repository.pure;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spring.jpadata.dto.MemberSearchCondition;
 import com.spring.jpadata.dto.MemberTeamDto;
@@ -56,7 +59,9 @@ public class MemberJpaRepository {
         return em.createQuery("select m from Member m", Member.class)
                 .getResultList();
     }
-    /**QueryDsl**/
+
+/**QueryDsl**/
+
     //쿼리디에스일 select all
     public List<Member> findAllByDSl() {
         return queryFactory.selectFrom(member).fetch();
@@ -70,7 +75,9 @@ public class MemberJpaRepository {
         return resultList;
     }
 
-    /**QueryDsl**/
+
+/**QueryDsl**/
+
     //쿼리디에스일 findByUsename
     public List<Member> findDslByUsername(String username) {
         return queryFactory
@@ -80,9 +87,11 @@ public class MemberJpaRepository {
     }
 
 
-    /**
+
+/**
      * QueryDsl
      **/
+
     //검색하기
     public List<MemberTeamDto> searchByBulider(MemberSearchCondition condition) {
         BooleanBuilder builder = new BooleanBuilder();
@@ -100,7 +109,7 @@ public class MemberJpaRepository {
             builder.and(member.age.loe(condition.getAgeLoe()));
         }
 
-        queryFactory
+        List<MemberTeamDto> memberTeamDtoList = queryFactory
                 .select(
                         new QMemberTeamDto(
                                 member.id.as("memberId"),
@@ -112,11 +121,64 @@ public class MemberJpaRepository {
                 .where(builder)
                 .leftJoin(member.team, team)
                 .fetch();
-
+        return memberTeamDtoList;
     }
 
 
+/**QueryDsl**/
+    public List<MemberTeamDto> searchByExpression(MemberSearchCondition condition) {
+        List<MemberTeamDto> memberTeamDtoList = queryFactory
+                .select(new QMemberTeamDto(
+                        member.id.as("memberId"),
+                        member.username,
+                        member.age,
+                        team.id.as("teamId"),
+                        team.name.as("teamName")
+                ))
+                .from(member)
+                .where(allSearch(condition)
+                        /*userNameEq(condition),
+                        teamNameEq(condition),
+                        ageGoe(condition),
+                        ageLoe(condition)*/)
+                .leftJoin(member.team, team)
+                .fetch();
+        return memberTeamDtoList;
+    }
 
+    /**QueryDsl where 다중 조건 메서드**/
+    private BooleanExpression allSearch(MemberSearchCondition condition) {
+        return userNameEq(condition).and(teamNameEq(condition)).and(ageGoe(condition)).and(ageLoe(condition));
+    }
+
+
+    private BooleanExpression userNameEq(MemberSearchCondition condition) {
+        if (StringUtils.hasText(condition.getUsername())) {
+            return member.username.eq(condition.getUsername());
+        }
+        return null;
+
+    }
+
+    private BooleanExpression teamNameEq(MemberSearchCondition condition) {
+        if (StringUtils.hasText(condition.getTeamName())) {
+            return team.name.eq(condition.getTeamName());
+        }
+        return null;
+
+    }
+
+    private BooleanExpression ageLoe(MemberSearchCondition condition) {
+        return condition.getAgeLoe() != null ? member.age.loe(condition.getAgeLoe()) : null;
+    }
+
+    private BooleanExpression ageGoe(MemberSearchCondition condition) {
+        return condition.getAgeGoe() != null ? member.age.goe(condition.getAgeGoe()) : null;
+    }
+    private BooleanExpression ageBetween(MemberSearchCondition condition) {
+        return ageGoe(condition).and(ageLoe(condition));
+    }
+    /**QueryDsl where 다중 조건 메서드 끝**/
 
     //count
     public Long getCount() {
@@ -126,6 +188,7 @@ public class MemberJpaRepository {
 
     public Member find(Long id) {
         return em.find(Member.class, id);
+
     }
 
 
@@ -160,3 +223,4 @@ public class MemberJpaRepository {
 
 
 }
+
