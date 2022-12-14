@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.spring.jpadata.dto.MemberDto;
@@ -22,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -492,10 +495,10 @@ public class QuerydslBasicTest {
 
     @Test
     @DisplayName("@BooleanBulider 사용 동적쿼리")
-    void dynamicQuery_BooleanBulider() throws Exception {
+    void dynamicQuery_BooleanBuilder() throws Exception {
         //검색 조건
         String usernameParam = "member1";
-        Integer ageParam = 10;
+        Integer ageParam = null;
 
         List<Member> members = searchMember1(usernameParam, ageParam);
 
@@ -519,4 +522,91 @@ public class QuerydslBasicTest {
                 .where(builder)
                 .fetch();
     }
+
+
+    @Test
+    @DisplayName("Where 다중 파라미터 사용 ")
+    void dynamicQuery_WhereParam() throws Exception {
+
+        //검색 조건
+        String usernameParam = "member2";
+        Integer ageParam = 20;
+        List<Member> members = searchMember2(usernameParam, ageParam);
+
+        assertThat(members.size()).isEqualTo(1);
+
+
+    }
+
+    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
+        return jpaQueryFactory
+                .selectFrom(member) // where에 null이 있다면 그냥 무시가된다. 그래서 동적쿼리가 작용하는것
+                .where(usernameEq(usernameCond),ageEq(ageCond)) // allEq(usernameCond,ageCond)
+                .fetch();
+    }
+
+
+    //장점 : 조립가능
+    private BooleanExpression allEq(String usernameCond, Integer ageCond) {
+        return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    private BooleanExpression usernameEq(String usernameCond) {
+        //usernameCond가 null이면 null을 반환
+        return usernameCond != null ? member.username.eq(usernameCond) : null;
+    }
+
+    private BooleanExpression ageEq(Integer ageCond) {
+        if(ageCond == null) return null;
+        return member.age.eq(ageCond);
+    }
+
+    @Test
+    @DisplayName("벌크 연산")
+    void bulk() throws Exception {
+        long count = jpaQueryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        //벌크연산은 디비와 영속성 컨텍스트가 안맞기 때문에 ->영속성 컨텍스트를 꼭 초기화해주자!
+        em.flush(); // 영속성 컨텍스트에 있는걸 다 보내고
+        em.clear(); // 영속성 컨텍스트를 지우자
+
+        //디비와 영속성 컨텍스트를 확인하기 위함
+        List<Member> result = jpaQueryFactory.selectFrom(member)
+                .fetch();
+
+        for (Member mem : result) {
+            System.out.println("mem = " + mem);
+        }
+    }
+
+
+    @Test
+    @DisplayName("더하기 곱하기")
+    void bulkAdd() throws Exception {
+        //빼기라면 member.age.add(-1)
+        //곱하기하면 member.age.multiply(2);
+
+        jpaQueryFactory
+                .update(member)
+                .set(member.age, member.age.add(-1))
+                .execute();
+    }
+
+    @Test
+    @DisplayName("삭제")
+    void delete() throws Exception {
+        long count = jpaQueryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+
+        System.out.println("count = " + count);
+
+
+    }
+
 }
