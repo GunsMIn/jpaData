@@ -12,7 +12,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member,Long> {
+            /**여기서 중요한 점 ! 인터페이스는 여러개를 상속 받을 수 있다.*/
+public interface MemberRepository extends JpaRepository<Member,Long> ,MemberRepositoryCustom{
     //<타입,pk매팽타입>
     //쿼리 메소드
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
@@ -45,12 +46,10 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     //clearAutomatically = true 속성은 벌크성 쿼리가 실행한다음에  em.clear()를 해준다.(영속성 컨텍스트 clear)
 
     //유연한 반환 타입
-    List<Member> findListByUsername(String username); // 컬렉션 반환
+    List<Member> findByUsername(String username); // 컬렉션 반환
 
-    Member findByUsername(String username); // 단건조회
+    //Member findByUsername(String username); // 단건조회
 
     Optional<Member> findOptionalByUsername(String name); // Optional 반환
-
-
 
 }
