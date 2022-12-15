@@ -136,11 +136,10 @@ public class MemberJpaRepository {
                         team.name.as("teamName")
                 ))
                 .from(member)
-                .where(allSearch(condition)
-                        /*userNameEq(condition),
+                .where( userNameEq(condition),
                         teamNameEq(condition),
                         ageGoe(condition),
-                        ageLoe(condition)*/)
+                        ageLoe(condition))
                 .leftJoin(member.team, team)
                 .fetch();
         return memberTeamDtoList;
@@ -148,7 +147,10 @@ public class MemberJpaRepository {
 
     /**QueryDsl where 다중 조건 메서드**/
     private BooleanExpression allSearch(MemberSearchCondition condition) {
-        return userNameEq(condition).and(teamNameEq(condition)).and(ageGoe(condition)).and(ageLoe(condition));
+        return userNameEq(condition)
+                .and(teamNameEq(condition))
+                .and(ageGoe(condition))
+                .and(ageLoe(condition));
     }
 
 
