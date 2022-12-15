@@ -22,10 +22,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 
@@ -510,7 +512,7 @@ public class QuerydslBasicTest {
     private List<Member> searchMember1(String usernameCond,Integer ageCond) {
         BooleanBuilder builder = new BooleanBuilder();
         //usernameCond 에 값이 있으면 BooleanBuilder에 and 조건을 넣어 준 것이다.
-        if (usernameCond != null) {
+        if (StringUtils.hasText(usernameCond)) { // null과 공백 처리
             builder.and(member.username.eq(usernameCond));
         }
         if (ageCond != null) {
