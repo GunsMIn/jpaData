@@ -1,6 +1,8 @@
 # ✨Spring_STUDY
 ✔jpaData를 이용한 프로젝트  레파지토리입니다.✔
 ![image](https://user-images.githubusercontent.com/104709432/198950229-e233789c-39a7-4005-b934-d6e7a21f1b0f.png)
+![querydsl](https://user-images.githubusercontent.com/104709432/207634404-5ee0d368-0432-4ec2-ad04-9e0ad7562a89.jpg)
+
 <br>
 <img src="https://img.shields.io/badge/Java-E34F26?style=flat&logo=Java&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat&logo=Spring Boot&logoColor=white"/></a>
